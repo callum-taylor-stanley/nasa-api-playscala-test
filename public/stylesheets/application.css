@@ -1,0 +1,59 @@
+.header {
+  margin: 20px;
+}
+
+.asset_container {
+  text-align: center;
+}
+
+.search_header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.error_condition {
+  display: none;
+}
+
+.description_input {
+  width: 30%;
+}
+
+.desc-column, .checkbox_btn_container {
+  margin: 0 auto;
+}
+
+.search_btn {
+  display:block;
+  margin: 0 auto;
+}
+
+.advanced_search_container {
+  margin-bottom:10px;
+}
+
+.advanced_search_container {
+  text-align: center;
+}
+
+.asset_col {
+  margin-bottom: 50px;
+}
+
+.thumbnail {
+    background-color: black;
+    width: 250px;
+    height: 200px;
+    display: inline-block; /* makes it fit in like an <img> */
+    background-size: cover; /* or contain */
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.h1 {
+  word-wrap: break-word;
+}
+
+.js_enabled {
+  display: none;
+}

@@ -1,0 +1,141 @@
+@import helper._
+
+@(assetSearch: Form[AssetSearch], assets: Option[List[NasaAssetItem]] = None, hasSearched: Boolean = false)(implicit request: Request[AnyContent])
+
+@main() {
+<!-- PAGE_NAME -->
+<!-- search -->
+<form action="@controllers.routes.SearchController.searchPost" id="searchForAssetForm" method="POST">
+  @CSRF.formField
+  <div class="jumbotron">
+    <h1 class="display-3 search_header">NASA Search</h1>
+
+    @if(assetSearch.hasGlobalErrors) {
+      <div class="alert alert-danger" role="alert">
+        @assetSearch.globalError.get.message
+      </div>
+    }
+
+    <div class="form-row align-items-center">
+      <div class="col-md-3 desc-column">
+        <label class="sr-only" for="description_input">Description</label>
+        <input type="text" class="form-control mb-2" id="description_input" placeholder="Description" name="description">
+      </div>
+    </div>
+    <details class="advanced_search_container">
+      <summary>Advanced Search</summary>
+      <div class="form-row align-items-center">
+        <div class="col-md-3">
+          <label class="sr-only" for="center_input">Center</label>
+          <input type="text" class="form-control mb-2" id="center_input" placeholder="Center" name="center">
+        </div>
+        <div class="col-md-3">
+          <label class="sr-only" for="description_508_input">Description 508</label>
+          <input type="text" class="form-control mb-2" id="description_508_input" placeholder="Description 508" name="description_508">
+        </div>
+        <div class="col-md-3">
+          <label class="sr-only" for="keywords_input">Keywords</label>
+          <input type="text" class="form-control mb-2" id="keywords_input" placeholder="Keywords" name="keywords">
+        </div>
+        <div class="col-md-3">
+          <label class="sr-only" for="location_input">Location</label>
+          <input type="text" class="form-control mb-2" id="location_input" placeholder="Location" name="location">
+        </div>
+        <div class="col-md-3">
+          <label class="sr-only" for="nasa_id_input">NASA Id</label>
+          <input type="text" class="form-control mb-2" id="nasa_id_input" placeholder="NASA Id" name="nasa_id">
+        </div>
+        <div class="col-md-3">
+          <label class="sr-only" for="photographer_input">Photographer</label>
+          <input type="text" class="form-control mb-2" id="photographer_input" placeholder="Photographer" name="photographer">
+        </div>
+        <div class="col-md-3">
+          <label class="sr-only" for="secondary_creator_input">Secondary Creator</label>
+          <input type="text" class="form-control mb-2" id="secondary_creator_input" placeholder="Secondary Creator" name="secondary_creator">
+        </div>
+        <div class="col-md-3">
+          <label class="sr-only" for="title_input">Title</label>
+          <input type="text" class="form-control mb-2" id="title_input" placeholder="Title" name="title">
+        </div>
+        <div class="col-md-3">
+          <label class="sr-only" for="year_start_input">Year Start</label>
+          <input type="number" min="0000" max="2018" class="form-control mb-2" id="year_start_input" placeholder="Year Start" name="year_start">
+        </div>
+        <div class="col-md-3">
+          <label class="sr-only" for="year_end_input">Year End</label>
+          <input type="number" min="0000" max="2018" class="form-control mb-2" id="year_end_input" placeholder="Year End" name="year_end">
+        </div>
+      </div>
+    </details>
+    <div class="form-row align-items-center">
+      <div class="col-md-1 checkbox_btn_container">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="true" name="media_type_image">
+          <label class="form-check-label" for="inlineCheckbox1">Images</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="true" name="media_type_audio">
+          <label class="form-check-label" for="inlineCheckbox2">Audio</label>
+        </div>
+          <button class="btn btn-primary search_btn" type="submit">Search</button>
+        @*<button class="btn btn-primary search_btn" type="button" onclick="getAssets()">Search</button>*@
+      </div>
+    </div>
+  </div>
+
+  @if(assets.nonEmpty && assets.get.length > 0) {
+    <div class="container results_container">
+      <h1 class="my-4 text-center text-lg-left">Results</h1>
+      <div class="row text-center text-lg-left">
+        @for(asset <- assets.get) {
+          @if(asset.data(0).media_type == "image") {
+            <div class="col-lg-3 col-md-4 col-xs-6 asset_col">
+              <noscript>
+                <a href="@controllers.routes.SearchController.asset(asset.data(0).nasa_id)" class="d-block h-90">
+                  <div class="thumbnail" style="background-image: url(@asset.links.get(0).href);"></div>
+                </a>
+              </noscript>
+              <a href="#results_container" data-nasa_id="@asset.data(0).nasa_id" onclick="getAssetInformation(this)" class="d-block h-90 js_enabled">
+                <div class="thumbnail" style="background-image: url(@asset.links.get(0).href);"></div>
+              </a>
+              <details>
+                <summary>Information</summary>
+                <p>Center: @asset.data(0).center</p>
+                <p>Date created: @asset.data(0).date_created</p>
+                <p>Keywords: @asset.data(0).keywords</p>
+                @if(asset.data(0).photographer.nonEmpty){<p>Photographer: @asset.data(0).photographer.get</p>}
+                @if(asset.data(0).location.nonEmpty){<p>Location: @asset.data(0).location.get</p>}
+              </details>
+            </div>
+          } else {
+            <div class="col-lg-3 col-md-4 col-xs-6 asset_col">
+              <noscript>
+                <a href="@controllers.routes.SearchController.asset(asset.data(0).nasa_id)" class="d-block h-90">
+                  <img class="img-fluid img-thumbnail" src="@routes.Assets.at("images/audio_icon.svg")" title="@asset.data(0).title" alt="@asset.data(0).title">
+                </a>
+              </noscript>
+              <a href="#results_container" data-nasa_id="@asset.data(0).nasa_id" onclick="getAssetInformation(this)" class="d-block h-90 js_enabled">
+                <img class="img-fluid img-thumbnail" src="@routes.Assets.at("images/audio_icon.svg")" title="@asset.data(0).title" alt="@asset.data(0).title">
+              </a>
+              <details>
+                <summary>Description</summary>
+                <p>@asset.data(0).description</p>
+              </details>
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="alert alert-warning error_condition">
+      <strong>Warning!</strong> Something went wrong!
+    </div>
+  } else {
+    @if(hasSearched) {
+    <div class="alert alert-info no_results">
+      <strong>Info!</strong> No results returned.
+    </div>
+    }
+  }
+</form>
+}

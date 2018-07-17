@@ -1,0 +1,23 @@
+@(asset: NasaAssetItem, assetInformation: NasaImage)
+
+@main() {
+<div class="jumbotron asset_container">
+  <h1 class="display-4">@asset.data(0).title</h1>
+
+  @if(asset.data(0).media_type == "image") {
+      <img class="img-fluid img-thumbnail" src="@asset.links.get(0).href" title="@asset.data(0).title" alt="@asset.data(0).title">
+      <details>
+        <summary>Description</summary>
+        <p>@asset.data(0).description</p>
+      </details>
+  } else {
+      <audio controls>
+        <source src="@assetInformation.items(2).href" type="audio/mpeg">
+      </audio>
+      <details>
+        <summary>Description</summary>
+        <p>@asset.data(0).description</p>
+      </details>
+  }
+</div>
+}
